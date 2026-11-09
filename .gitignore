@@ -1,0 +1,14 @@
+# Dependencias
+node_modules/
+
+# Compilación de producción
+dist/
+
+# Variables de entorno
+.env
+.env.local
+.env.*.local
+
+# Configuración y reglas de Agentes (solo local)
+.agents/
+GEMINI.md
