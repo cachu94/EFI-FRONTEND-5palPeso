@@ -1,4 +1,5 @@
 # Guía de Arquitectura, División de Tareas y Convenciones para el Equipo
+
 ## Proyecto: 5palPeso Financial Interface (EFI Frontend 2026)
 
 Este documento contiene las definiciones de arquitectura, división de responsabilidades y convenciones que debe respetar **ambos integrantes** y sus respectivos agentes de IA (Antigravity).
@@ -6,6 +7,7 @@ Este documento contiene las definiciones de arquitectura, división de responsab
 ---
 
 ## 1. Reglas Globales y Filosofía de Trabajo (Para los Agentes de Antigravity)
+
 1. **Rol de Guía y Tutor Pedagógico**: Los agentes asisten con arquitectura, buenas prácticas y explicación conceptual. **No deben escribir ni modificar código fuente directamente**; cada alumno programa, comprende y defiende su código en la evaluación oral.
 2. **Stack Oficial Obligatorio**: React (Vite) + Tailwind CSS + `react-router-dom` (v6+) + Context API.
 3. **Control de Versiones (GitFlow)**:
@@ -18,16 +20,17 @@ Este documento contiene las definiciones de arquitectura, división de responsab
 ## 2. División de Roles y Responsabilidades
 
 ### Integrante 1 (Tech Lead & DevOps):
+
 - **Setup y Cimientos**:
-  - Inicialización del proyecto con Vite + Tailwind CSS (`tailwind.config.js` con tokens "Azul y Oro").
+  - Inicialización del proyecto con Vite + Tailwind CSS (`src/index.css` con tokens "Azul y Oro").
   - Repositorio público en GitHub y configuración de ramas (`main` y `develop`).
-  - Creación de la estructura base de carpetas (`components/`, `pages/`, `services/`, `context/`, `routes/`, `hooks/`, `utils/`).
-  - Enrutador central (`AppRouter.jsx`) con `MainLayout`, Navbar, Sidebar responsiva y Footer.
-  - Implementación de `ThemeContext` (Modo Oscuro / Claro persistido en `localStorage`).
+  - Creación de la estructura base de carpetas (`components/`, `pages/`, `services/`, `context/`, `utils/`).
+  - Enrutador central en `App.jsx` con `Navbar` y contenedor de vistas.
+  - Implementación de `ThemeContext.jsx` (Modo Oscuro / Claro persistido en `localStorage`).
   - Cliente HTTP centralizado (`src/services/api.js`) apuntando a `import.meta.env.VITE_API_URL`.
 - **Módulos de Negocio Asignados**:
-  - `DashboardPage.jsx`: Vista principal, métricas globales de ciclo, saldo libre, presupuesto diario remanente y banners de alerta.
-  - `CreditosPage.jsx` y `SimuladorCreditoPage.jsx`: Gestión de deudas activas y la **Ruta Anidada** (`/creditos/simulador`) que consume `POST /metricas/simulacion/credito/{usuario_id}`.
+  - `Dashboard.jsx`: Vista principal, métricas globales de ciclo, saldo libre, presupuesto diario remanente y banners de alerta.
+  - `Creditos.jsx` y `SimuladorCredito.jsx`: Gestión de deudas activas y la **Ruta Anidada** (`/creditos/simulador`) que consume `POST /metricas/simulacion/credito/{usuario_id}`.
 - **Auditoría & Despliegue**:
   - Code Review y merge de los Pull Requests del Integrante 2 hacia `develop`.
   - Configuración del Hosting y Despliegue en **Vercel** con variables de entorno (`VITE_API_URL`).
@@ -35,29 +38,31 @@ Este documento contiene las definiciones de arquitectura, división de responsab
 ---
 
 ### Integrante 2 (Feature Developer):
+
 - **Flujo de Trabajo**:
   - Clonar el repositorio en su máquina local (`git clone <url_del_repo>`).
   - Pararse sobre `develop` y crear sus ramas: `git checkout -b feature/<modulo>`.
   - Instalar dependencias con `npm install` y verificar que corra con `npm run dev`.
 - **Módulos de Negocio Asignados**:
-  - `GastosDiariosPage.jsx`:
+  - `GastosDiarios.jsx`:
     - Formulario controlado con validación de entradas (campos obligatorios, formato numérico > 0, longitud).
     - Tabla con historial de gastos y acción de eliminar (DELETE con modal de confirmación).
-  - `GastosFijosPage.jsx`:
+  - `GastosFijos.jsx`:
     - Listado y formulario para servicios, suscripciones y alquileres fijos.
-  - `IngresosPage.jsx`:
+  - `Ingresos.jsx`:
     - Registro y listado de sueldos y cobros del ciclo.
-  - `CuentasPage.jsx`:
+  - `Cuentas.jsx`:
     - Visualización de tarjetas de bancos y billeteras.
     - Integración del widget de **Distribución de Fondos** que consume `GET /metricas/distribucion-fondos/{usuario_id}`.
 - **Reglas de Integración**:
-  - Reutilizar componentes de `components/common/` (`Button`, `Card`, `Input`, `Modal`, `Badge`).
+  - Reutilizar componentes de `src/components/` (`MetricCard.jsx`, `Modal.jsx`, etc.).
   - Respetar los estilos y clases de Tailwind definidos en `docs/design.md`.
   - Enviar Pull Request a la rama `develop` cuando finalice cada feature.
 
 ---
 
 ## 3. Sistema de Diseño (Design System Tokens)
+
 El proyecto utiliza la identidad visual **5palPeso** basada en la paleta **Azul y Oro** (definida en `docs/design.md`):
 
 - **Fondo Base (Dark)**: `#0B1B3D` (`bg-surface`)
@@ -78,31 +83,30 @@ El proyecto utiliza la identidad visual **5palPeso** basada en la paleta **Azul 
 ```text
 src/
 ├── assets/          # Íconos y gráficos SVG
-├── components/
-│   ├── common/      # Button.jsx, Input.jsx, Card.jsx, Modal.jsx, Badge.jsx, Spinner.jsx
-│   ├── layout/      # Navbar.jsx, Sidebar.jsx, MainLayout.jsx, Footer.jsx
-│   └── metrics/     # DebtMeter.jsx, DistributionCard.jsx, DailyBudgetCard.jsx
-├── context/         # ThemeContext.jsx, FinanceFilterContext.jsx
-├── hooks/           # useTheme.js, useFetch.js, useForm.js
-├── pages/
-│   ├── DashboardPage.jsx
-│   ├── GastosDiariosPage.jsx
-│   ├── GastosFijosPage.jsx
-│   ├── IngresosPage.jsx
-│   ├── CreditosPage.jsx
-│   ├── SimuladorCreditoPage.jsx   # Sub-ruta anidada /creditos/simulador
-│   ├── CuentasPage.jsx
-│   ├── DetalleCreditoPage.jsx     # Dinámica 1: /creditos/:id
-│   ├── DetalleCuentaPage.jsx      # Dinámica 2: /cuentas/:id
-│   └── NotFoundPage.jsx
-├── routes/          # AppRouter.jsx
+├── components/      # Navbar.jsx, MetricCard.jsx, ModalConfirm.jsx (Componentes modulares planos)
+├── context/         # ThemeContext.jsx (Requisito R3: Modo Claro/Oscuro)
+├── pages/           # Vistas vinculadas a rutas (Requisito R1)
+│   ├── Dashboard.jsx
+│   ├── GastosDiarios.jsx
+│   ├── GastosFijos.jsx
+│   ├── Ingresos.jsx
+│   ├── Creditos.jsx
+│   ├── SimuladorCredito.jsx   # Sub-ruta anidada /creditos/simulador
+│   ├── Cuentas.jsx
+│   ├── DetalleCredito.jsx     # Dinámica 1: /creditos/:id
+│   ├── DetalleCuenta.jsx      # Dinámica 2: /cuentas/:id
+│   └── NotFound.jsx
 ├── services/        # api.js, gastosService.js, ingresosService.js, creditosService.js, metricasService.js
-└── utils/           # formatters.js (formato moneda ARS, fechas) y validators.js
+├── utils/           # formatters.js (moneda ARS, fechas) y validators.js
+├── App.jsx          # Configuración principal de enrutamiento (<Routes> y <Route>)
+├── main.jsx         # Punto de entrada con ThemeProvider y BrowserRouter
+└── index.css        # Importación de Tailwind v4 y variables del tema
 ```
 
 ---
 
 ## 5. Protocolo de Envío de Tareas y Pull Requests
+
 1. Crear rama desde `develop`: `git checkout develop && git pull && git checkout -b feature/gastos-diarios`
 2. Desarrollar y verificar localmente: `npm run dev` y `npm run build` sin errores de compilación.
 3. Subir rama a GitHub: `git push -u origin feature/gastos-diarios`
