@@ -1,6 +1,9 @@
 import { Route, Routes } from "react-router-dom";
 import { Navbar } from "./components/Navbar";
 import { Dashboard } from "./pages/Dashboard";
+import { Creditos } from "./pages/Creditos";
+import { CreditosLista } from "./pages/CreditosLista";
+import { SimuladorCredito } from "./pages/SimuladorCredito";
 
 function App() {
   return (
@@ -34,14 +37,11 @@ function App() {
               </h1>
             }
           />
-          <Route
-            path="/creditos"
-            element={
-              <h1 className="text-2xl font-bold">
-                Vista: Créditos (En construcción)
-              </h1>
-            }
-          />
+          <Route path="/creditos" element={<Creditos />}>
+            <Route index element={<CreditosLista />} />
+            <Route path="simulador" element={<SimuladorCredito />} />
+          </Route>
+
           <Route
             path="/cuentas"
             element={
