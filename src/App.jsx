@@ -1,6 +1,13 @@
 import { Route, Routes } from "react-router-dom";
 import { Navbar } from "./components/Navbar";
+import { Cuentas } from "./pages/Cuentas";
 import { Dashboard } from "./pages/Dashboard";
+import { GastosDiarios } from "./pages/GastosDiarios";
+import { GastosFijos } from "./pages/GastosFijos";
+import { Ingresos } from "./pages/Ingresos";
+import { NuevoGastoDiario } from "./pages/NuevoGastoDiario";
+import { NuevoGastoFijo } from "./pages/NuevoGastoFijo";
+import { NuevoIngreso } from "./pages/NuevoIngreso";
 
 function App() {
   return (
@@ -10,30 +17,15 @@ function App() {
       <main className="max-w-7xl mx-auto px-4 py-8">
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route
-            path="/gastos-diarios"
-            element={
-              <h1 className="text-2xl font-bold">
-                Vista: Gastos Diarios (En construcción)
-              </h1>
-            }
-          />
-          <Route
-            path="/gastos-fijos"
-            element={
-              <h1 className="text-2xl font-bold">
-                Vista: Gastos Fijos (En construcción)
-              </h1>
-            }
-          />
-          <Route
-            path="/ingresos"
-            element={
-              <h1 className="text-2xl font-bold">
-                Vista: Ingresos (En construcción)
-              </h1>
-            }
-          />
+          <Route path="/gastos-diarios" element={<GastosDiarios />}>
+            <Route path="nuevo" element={<NuevoGastoDiario />} />
+          </Route>
+          <Route path="/gastos-fijos" element={<GastosFijos />}>
+            <Route path="nuevo" element={<NuevoGastoFijo />} />
+          </Route>
+          <Route path="/ingresos" element={<Ingresos />}>
+            <Route path="nuevo" element={<NuevoIngreso />} />
+          </Route>
           <Route
             path="/creditos"
             element={
@@ -42,14 +34,7 @@ function App() {
               </h1>
             }
           />
-          <Route
-            path="/cuentas"
-            element={
-              <h1 className="text-2xl font-bold">
-                Vista: Cuentas (En construcción)
-              </h1>
-            }
-          />
+          <Route path="/cuentas" element={<Cuentas />} />
           <Route
             path="*"
             element={
