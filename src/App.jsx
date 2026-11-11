@@ -1,8 +1,9 @@
 import { Route, Routes } from "react-router-dom";
 import { Navbar } from "./components/Navbar";
-import { Dashboard } from "./pages/Dashboard";
 import { Creditos } from "./pages/Creditos";
 import { CreditosLista } from "./pages/CreditosLista";
+import { Dashboard } from "./pages/Dashboard";
+import { DetalleCredito } from "./pages/DetalleCredito";
 import { SimuladorCredito } from "./pages/SimuladorCredito";
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
             <Route index element={<CreditosLista />} />
             <Route path="simulador" element={<SimuladorCredito />} />
           </Route>
+          <Route path="/creditos/:id" element={<DetalleCredito />} />
 
           <Route
             path="/cuentas"

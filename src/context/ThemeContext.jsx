@@ -31,7 +31,7 @@ export function ThemeProvider({ children }) {
 export function useTema() {
   const context = useContext(ThemeContext);
   if (!context) {
-    throw new Error("useTema must be used within a ThemeProvider");
+    throw new Error("useTema esta fuera del ThemeProvider");
   }
   return context;
 }

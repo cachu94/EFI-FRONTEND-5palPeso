@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { AlertCircle, CreditCard, ExternalLink, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useOutletContext } from "react-router-dom";
 import { eliminarCredito, getCreditos } from "../services/creditosService";
 
 const formatearMoneda = (monto) => {
@@ -13,6 +13,8 @@ const formatearMoneda = (monto) => {
 };
 
 export function CreditosLista() {
+  const { actualizaciones } = useOutletContext() || {};
+
   const [creditos, setCreditos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
@@ -33,7 +35,7 @@ export function CreditosLista() {
 
   useEffect(() => {
     cargarCreditos();
-  }, []);
+  }, [actualizaciones]);
 
   const handleEliminar = async (id) => {
     const confirmar = window.confirm(

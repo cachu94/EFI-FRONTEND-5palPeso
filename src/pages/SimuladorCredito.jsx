@@ -140,9 +140,6 @@ export function SimuladorCredito() {
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
                 Plazo de Pago (Meses)
               </label>
-              <span className="text-[10px] font-bold text-accent-gold uppercase tracking-wider bg-accent-gold/10 px-2 py-0.5 rounded-full border border-accent-gold/20">
-                Personalizable
-              </span>
             </div>
 
             <div className="flex items-center gap-2">

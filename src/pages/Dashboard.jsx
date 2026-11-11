@@ -194,7 +194,7 @@ export function Dashboard() {
               + Nuevo Ingreso
             </Link>
             <Link
-              to="/creditos"
+              to="/creditos/simulador"
               className="w-full text-center py-3 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-surface dark:hover:bg-white/5 text-slate-800 dark:text-white font-bold rounded-xl text-sm transition border border-slate-200 dark:border-white/10"
             >
               Simular Nuevo Crédito
