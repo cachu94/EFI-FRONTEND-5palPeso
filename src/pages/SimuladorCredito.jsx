@@ -6,6 +6,7 @@ import {
   TrendingDown,
 } from "lucide-react";
 import { useState } from "react";
+import { InputMoneda } from "../components/InputMoneda";
 import { simularCredito } from "../services/creditosService";
 
 const formatearMoneda = (monto) => {
@@ -115,12 +116,15 @@ export function SimuladorCredito() {
             <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1.5">
               Monto de la Cuota
             </label>
-            <input
-              type="number"
-              name="montoCuota"
+            <InputMoneda
               value={formulario.montoCuota}
-              onChange={handleChange}
-              placeholder="Ej: 25000"
+              onChange={(val) => {
+                setFormulario((p) => ({ ...p, montoCuota: val }));
+                if (errores.montoCuota) {
+                  setErrores((p) => ({ ...p, montoCuota: null }));
+                }
+              }}
+              placeholder="0"
               className={`w-full bg-slate-50 dark:bg-surface border rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none transition tabular-nums 
                 ${
                   errores.montoCuota

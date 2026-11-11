@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { InputMoneda } from "../components/InputMoneda";
 import {
   actulizarCredito,
   getCreditoPorId,
@@ -276,18 +277,15 @@ export function DetalleCredito() {
                 <label className="block text-xs font-bold uppercase text-slate-400 mb-1">
                   Monto Cuota
                 </label>
-                <input
-                  type="number"
-                  step="any"
+                <InputMoneda
+                  required
                   value={formEdicion.monto_cuota}
                   onChange={(e) =>
                     setFormEdicion((p) => ({
                       ...p,
-                      monto_cuota: e.target.value,
+                      monto_cuota: e,
                     }))
                   }
-                  required
-                  className="w-full bg-slate-50 dark:bg-surface border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-accent-gold"
                 />
               </div>
 

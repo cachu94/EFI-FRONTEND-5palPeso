@@ -1,6 +1,7 @@
 import { CreditCard, Plus, Sparkles, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
+import { InputMoneda } from "../components/InputMoneda";
 import { crearCredito, getCuentas } from "../services/creditosService";
 
 export function Creditos() {
@@ -175,19 +176,15 @@ export function Creditos() {
                   <label className="block text-xs font-bold uppercase text-slate-400 mb-1">
                     Monto Cuota ($) *
                   </label>
-                  <input
-                    type="number"
-                    step="any"
+                  <InputMoneda
                     required
-                    placeholder="0"
                     value={form.monto_cuota}
-                    onChange={(e) =>
+                    onChange={(val) =>
                       setForm((p) => ({
                         ...p,
-                        monto_cuota: e.target.value,
+                        monto_cuota: val,
                       }))
                     }
-                    className="w-full bg-slate-50 dark:bg-surface border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-accent-gold"
                   />
                 </div>
 
@@ -250,13 +247,11 @@ export function Creditos() {
                   <label className="block text-xs font-bold uppercase text-slate-400 mb-1">
                     Precio Contado ($) (Opcional)
                   </label>
-                  <input
-                    type="number"
-                    step="any"
+                  <InputMoneda
                     placeholder="Para cálculo de CFT"
                     value={form.precio_contado}
                     onChange={(e) =>
-                      setForm((p) => ({ ...p, precio_contado: e.target.value }))
+                      setForm((p) => ({ ...p, precio_contado: e }))
                     }
                     className="w-full bg-slate-50 dark:bg-surface border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-accent-gold"
                   />

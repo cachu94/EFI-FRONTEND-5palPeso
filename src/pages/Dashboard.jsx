@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { MetricCard } from "../components/MetricCard";
 import { getMetricasCiclo } from "../services/metricasService";
+import { formatearFecha } from "../utils/formateadores";
 
 const formatearMoneda = (monto) => {
   return new Intl.NumberFormat("es-AR", {
@@ -84,7 +85,8 @@ export function Dashboard() {
             Resumen Financiero
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Período: {metricas.periodo_inicio} al {metricas.periodo_fin}
+            Período: {formatearFecha(metricas.periodo_inicio)} al{" "}
+            {formatearFecha(metricas.periodo_fin)}
           </p>
         </div>
         <div className="flex items-center gap-2 bg-slate-100 dark:bg-surface-header px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/5 w-fit">
