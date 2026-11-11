@@ -15,14 +15,7 @@ import {
   getCreditoPorId,
   pagarCuota,
 } from "../services/creditosService";
-
-const formatearMoneda = (monto) => {
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    maximumFractionDigits: 0,
-  }).format(monto || 0);
-};
+import { formatearFecha, formatearMoneda } from "../utils/formateadores";
 
 export function DetalleCredito() {
   const { id } = useParams();
@@ -200,7 +193,7 @@ export function DetalleCredito() {
             </span>
             <p className="text-2xl font-extrabold text-slate-700 dark:text-slate-300 flex items-center justify-center gap-1.5">
               <Calendar className="w-4 h-4 text-surface dark:text-accent-gold" />
-              {credito.fecha_inicio}
+              {formatearFecha(credito.fecha_inicio)}
             </p>
           </div>
         </div>
