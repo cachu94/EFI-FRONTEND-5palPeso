@@ -1,34 +1,51 @@
+import axios from "axios";
+
 // URL base de la API (toma la del .env o usa por defecto la de la nube)
 export const API_BASE_URL =
   import.meta.env.VITE_API_URL || "https://efi-backend.fastapicloud.dev";
 
-export async function apiRequest(path, options = {}) {
-  const headers = new Headers(options.headers);
+const clienteApi = axios.create({
+  baseURL: API_BASE_URL,
+});
 
-  if (options.body && !headers.has("Content-Type")) {
+export async function apiRequest(path, options = {}) {
+  const { body, ...configuracion } = options;
+  const headers = new Headers(configuracion.headers);
+
+  if (body && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...options,
-    headers,
-  });
-
-  if (response.status === 204) {
-    if (!response.ok) {
-      throw new Error(`La API respondió con el estado ${response.status}`);
+  try {
+    const response = await clienteApi.request({
+      url: path,
+      ...configuracion,
+      headers,
+      data: body,
+    });
+    return response.data;
+  } catch (error) {
+    if (!axios.isAxiosError(error)) {
+      throw error;
     }
-    return null;
-  }
 
-  const data = await response.json();
-  if (!response.ok) {
-    const detail =
-      typeof data.detail === "string"
-        ? data.detail
-        : JSON.stringify(data.detail ?? data);
-    throw new Error(detail || `La API respondió con el estado ${response.status}`);
-  }
+    const datos = error.response?.data;
+    const detalle =
+      datos && typeof datos === "object" ? datos.detail : undefined;
+    const mensaje =
+      typeof detalle === "string"
+        ? detalle
+        : datos == null
+          ? ""
+          : JSON.stringify(detalle ?? datos);
+    const estado = error.response?.status;
 
-  return data;
+    throw new Error(
+      mensaje ||
+        (estado
+          ? `La API respondió con el estado ${estado}`
+          : error.message),
+      { cause: error },
+    );
+  }
 }
