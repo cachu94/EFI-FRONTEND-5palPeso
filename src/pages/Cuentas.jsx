@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { useCallback, useEffect, useState } from "react";
 import { Building2, Wallet } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { Pagination } from "../components/Pagination";
 import { getCuentas } from "../services/cuentasService";
 import { getDistribucionFondos } from "../services/metricasService";
@@ -68,7 +68,8 @@ export function Cuentas() {
           Cuentas
         </h1>
         <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-          Consultá tus bancos y billeteras junto con la distribución sugerida de fondos.
+          Consultá tus bancos y billeteras junto con la distribución sugerida de
+          fondos.
         </p>
       </header>
 
