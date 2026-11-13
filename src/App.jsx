@@ -1,4 +1,3 @@
-
 import { Route, Routes } from "react-router-dom";
 import { Navbar } from "./components/Navbar";
 
@@ -9,6 +8,7 @@ import { DetalleCredito } from "./pages/DetalleCredito";
 import { SimuladorCredito } from "./pages/SimuladorCredito";
 
 import { Cuentas } from "./pages/Cuentas";
+import { DetalleCuenta } from "./pages/DetalleCuenta";
 import { GastosDiarios } from "./pages/GastosDiarios";
 import { GastosFijos } from "./pages/GastosFijos";
 import { Ingresos } from "./pages/Ingresos";
@@ -45,6 +45,7 @@ function App() {
           <Route path="/creditos/:id" element={<DetalleCredito />} />
 
           <Route path="/cuentas" element={<Cuentas />} />
+          <Route path="/cuentas/:id" element={<DetalleCuenta />} />
 
           <Route
             path="*"

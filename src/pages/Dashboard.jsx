@@ -6,12 +6,15 @@ import {
   CreditCard,
   PiggyBank,
   TrendingUp,
+  UserPlus,
   Wallet,
+  X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { MetricCard } from "../components/MetricCard";
 import { getMetricasCiclo } from "../services/metricasService";
+import { crearUsuario } from "../services/usuariosService";
 import { formatearFecha } from "../utils/formateadores";
 
 const formatearMoneda = (monto) => {
@@ -26,6 +29,40 @@ export function Dashboard() {
   const [metricas, setMetricas] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
+
+  const [modalUsuarioAbierto, setModalUsuarioAbierto] = useState(false);
+  const [guardandoUsuario, setGuardandoUsuario] = useState(false);
+  const [formUsuario, setFormUsuario] = useState({
+    nombre: "",
+    email: "",
+    dia_cobro: 15,
+    porcentaje_ahorro: 10,
+  });
+
+  const handleCrearUsuario = async (e) => {
+    e.preventDefault();
+    try {
+      setGuardandoUsuario(true);
+      await crearUsuario({
+        nombre: formUsuario.nombre,
+        email: formUsuario.email,
+        dia_cobro: parseInt(formUsuario.dia_cobro, 10),
+        porcentaje_ahorro: parseFloat(formUsuario.porcentaje_ahorro),
+      });
+      alert(`¡Usuario "${formUsuario.nombre}" creado exitosamente!`);
+      setModalUsuarioAbierto(false);
+      setFormUsuario({
+        nombre: "",
+        email: "",
+        dia_cobro: 15,
+        porcentaje_ahorro: 10,
+      });
+    } catch {
+      alert("Error al crear el usuario. Verificá los datos ingresados.");
+    } finally {
+      setGuardandoUsuario(false);
+    }
+  };
 
   const cargarDatos = async () => {
     try {
@@ -201,9 +238,129 @@ export function Dashboard() {
             >
               Simular Nuevo Crédito
             </Link>
+            <button
+              type="button"
+              onClick={() => setModalUsuarioAbierto(true)}
+              className="w-full text-center py-3 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-surface dark:hover:bg-white/5 text-slate-800 dark:text-white font-bold rounded-xl text-sm transition border border-slate-200 dark:border-white/10 flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <UserPlus className="w-4 h-4 text-amber-500" />
+              <span>+ Nuevo Usuario</span>
+            </button>
           </div>
         </div>
       </div>
+
+      {modalUsuarioAbierto && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-surface-container border border-slate-200 dark:border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/5 pb-3">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                Dar de Alta Nuevo Usuario
+              </h3>
+              <button
+                onClick={() => setModalUsuarioAbierto(false)}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-white transition cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCrearUsuario} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase text-slate-400 mb-1">
+                  Nombre Completo *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ej: Facundo Giacri"
+                  value={formUsuario.nombre}
+                  onChange={(e) =>
+                    setFormUsuario((p) => ({ ...p, nombre: e.target.value }))
+                  }
+                  className="w-full bg-slate-50 dark:bg-surface border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-amber-400"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-slate-400 mb-1">
+                  Correo Electrónico *
+                </label>
+                <input
+                  type="email"
+                  required
+                  placeholder="ejemplo@correo.com"
+                  value={formUsuario.email}
+                  onChange={(e) =>
+                    setFormUsuario((p) => ({ ...p, email: e.target.value }))
+                  }
+                  className="w-full bg-slate-50 dark:bg-surface border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-amber-400"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-400 mb-1">
+                    Día de Cobro *
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="31"
+                    required
+                    value={formUsuario.dia_cobro}
+                    onChange={(e) =>
+                      setFormUsuario((p) => ({
+                        ...p,
+                        dia_cobro: e.target.value,
+                      }))
+                    }
+                    className="w-full bg-slate-50 dark:bg-surface border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-amber-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-400 mb-1">
+                    % Ahorro Objetivo
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="any"
+                    required
+                    value={formUsuario.porcentaje_ahorro}
+                    onChange={(e) =>
+                      setFormUsuario((p) => ({
+                        ...p,
+                        porcentaje_ahorro: e.target.value,
+                      }))
+                    }
+                    className="w-full bg-slate-50 dark:bg-surface border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-amber-400"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-white/5">
+                <button
+                  type="button"
+                  onClick={() => setModalUsuarioAbierto(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-surface dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 transition cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={guardandoUsuario}
+                  className="px-5 py-2 rounded-xl text-xs font-bold bg-amber-400 text-blue-950 hover:bg-amber-500 transition shadow-sm cursor-pointer disabled:opacity-50"
+                >
+                  {guardandoUsuario ? "Guardando..." : "Crear Usuario"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

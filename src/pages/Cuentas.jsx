@@ -1,8 +1,8 @@
-/* eslint-disable react-hooks/set-state-in-effect */
-import { Building2, Wallet } from "lucide-react";
+import { Building2, ExternalLink, Plus, Wallet, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Pagination } from "../components/Pagination";
-import { getCuentas } from "../services/cuentasService";
+import { crearCuenta, getCuentas } from "../services/cuentasService";
 import { getDistribucionFondos } from "../services/metricasService";
 import { formatearMoneda } from "../utils/formatters";
 
@@ -19,6 +19,14 @@ export function Cuentas() {
   const [cargandoDistribucion, setCargandoDistribucion] = useState(true);
   const [errorCuentas, setErrorCuentas] = useState("");
   const [errorDistribucion, setErrorDistribucion] = useState("");
+
+  const [modalAbierto, setModalAbierto] = useState(false);
+  const [guardando, setGuardando] = useState(false);
+  const [form, setForm] = useState({
+    nombre: "",
+    entidad: "",
+    tipo_cuenta: "banco",
+  });
 
   const cargarCuentas = useCallback(
     async (numeroPagina = pagina) => {
@@ -58,6 +66,28 @@ export function Cuentas() {
     cargarDistribucion();
   }, [cargarDistribucion]);
 
+  const handleCrearCuenta = async (e) => {
+    e.preventDefault();
+    try {
+      setGuardando(true);
+      await crearCuenta({
+        usuario_id: USUARIO_ID,
+        nombre: form.nombre,
+        entidad: form.entidad,
+        tipo_cuenta: form.tipo_cuenta,
+        activo: true,
+      });
+      setModalAbierto(false);
+      setForm({ nombre: "", entidad: "", tipo_cuenta: "banco" });
+      cargarCuentas(1);
+      cargarDistribucion();
+    } catch {
+      alert("Error al crear la cuenta. Verificá los datos ingresados.");
+    } finally {
+      setGuardando(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <header>
@@ -83,14 +113,25 @@ export function Cuentas() {
               {total} {total === 1 ? "cuenta" : "cuentas"}
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => cargarCuentas(pagina)}
-            disabled={cargandoCuentas}
-            className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 disabled:opacity-50 dark:text-slate-200 dark:hover:bg-white/10"
-          >
-            Actualizar
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setModalAbierto(true)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-amber-400 text-blue-950 hover:bg-amber-500 transition shadow-sm cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Nueva Cuenta</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => cargarCuentas(pagina)}
+              disabled={cargandoCuentas}
+              className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 disabled:opacity-50 dark:text-slate-200 dark:hover:bg-white/10 cursor-pointer"
+            >
+              Actualizar
+            </button>
+          </div>
         </div>
 
         {errorCuentas && (
@@ -128,31 +169,41 @@ export function Cuentas() {
               return (
                 <article
                   key={cuenta.id}
-                  className="rounded-xl border border-slate-200 bg-slate-50 p-5 transition hover:border-amber-400/60 dark:border-white/10 dark:bg-surface"
+                  className="rounded-xl border border-slate-200 bg-slate-50 p-5 transition hover:border-amber-400/60 dark:border-white/10 dark:bg-surface flex flex-col justify-between"
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <span className="rounded-xl bg-blue-100 p-3 text-blue-900 dark:bg-surface-header dark:text-amber-400">
-                      <Icono className="h-5 w-5" aria-hidden="true" />
-                    </span>
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-bold ${
-                        cuenta.activo
-                          ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-400/10 dark:text-emerald-300"
-                          : "bg-slate-200 text-slate-600 dark:bg-white/10 dark:text-slate-300"
-                      }`}
-                    >
-                      {cuenta.activo ? "Activa" : "Inactiva"}
-                    </span>
+                  <div>
+                    <div className="flex items-start justify-between gap-3">
+                      <span className="rounded-xl bg-blue-100 p-3 text-blue-900 dark:bg-surface-header dark:text-amber-400">
+                        <Icono className="h-5 w-5" aria-hidden="true" />
+                      </span>
+                      <span
+                        className={`rounded-full px-3 py-1 text-xs font-bold ${
+                          cuenta.activo
+                            ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-400/10 dark:text-emerald-300"
+                            : "bg-slate-200 text-slate-600 dark:bg-white/10 dark:text-slate-300"
+                        }`}
+                      >
+                        {cuenta.activo ? "Activa" : "Inactiva"}
+                      </span>
+                    </div>
+                    <h3 className="mt-4 text-lg font-bold text-slate-900 dark:text-white">
+                      {cuenta.nombre}
+                    </h3>
+                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                      {cuenta.entidad || cuenta.tipo_cuenta}
+                    </p>
+                    <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                      {cuenta.tipo_cuenta.replaceAll("_", " ")}
+                    </p>
                   </div>
-                  <h3 className="mt-4 text-lg font-bold text-slate-900 dark:text-white">
-                    {cuenta.nombre}
-                  </h3>
-                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-                    {cuenta.entidad || cuenta.tipo_cuenta}
-                  </p>
-                  <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                    {cuenta.tipo_cuenta.replaceAll("_", " ")}
-                  </p>
+
+                  <Link
+                    to={`/cuentas/${cuenta.id}`}
+                    className="mt-4 inline-flex items-center justify-center gap-1.5 w-full py-2 px-3 bg-slate-100 hover:bg-slate-200 dark:bg-surface-header dark:hover:bg-white/5 text-slate-800 dark:text-white rounded-xl text-xs font-bold transition border border-slate-200 dark:border-white/10"
+                  >
+                    <span>Ver detalle</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </Link>
                 </article>
               );
             })}
@@ -227,6 +278,92 @@ export function Cuentas() {
           </ul>
         )}
       </section>
+
+      {modalAbierto && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-surface-container border border-slate-200 dark:border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/5 pb-3">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                Dar de Alta Nueva Cuenta
+              </h3>
+              <button
+                onClick={() => setModalAbierto(false)}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-white transition cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCrearCuenta} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase text-slate-400 mb-1">
+                  Nombre de la Cuenta *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ej: Banco Galicia Sueldo"
+                  value={form.nombre}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, nombre: e.target.value }))
+                  }
+                  className="w-full bg-slate-50 dark:bg-surface border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-amber-400"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-slate-400 mb-1">
+                  Entidad Financiera *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ej: Banco Galicia, Mercado Pago"
+                  value={form.entidad}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, entidad: e.target.value }))
+                  }
+                  className="w-full bg-slate-50 dark:bg-surface border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-amber-400"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-slate-400 mb-1">
+                  Tipo de Medio *
+                </label>
+                <select
+                  value={form.tipo_cuenta}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, tipo_cuenta: e.target.value }))
+                  }
+                  className="w-full bg-slate-50 dark:bg-surface border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-amber-400"
+                >
+                  <option value="banco">Banco</option>
+                  <option value="billetera_virtual">Billetera Virtual</option>
+                  <option value="efectivo">Efectivo</option>
+                </select>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-white/5">
+                <button
+                  type="button"
+                  onClick={() => setModalAbierto(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-surface dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 transition cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={guardando}
+                  className="px-5 py-2 rounded-xl text-xs font-bold bg-amber-400 text-blue-950 hover:bg-amber-500 transition shadow-sm cursor-pointer disabled:opacity-50"
+                >
+                  {guardando ? "Guardando..." : "Crear Cuenta"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
